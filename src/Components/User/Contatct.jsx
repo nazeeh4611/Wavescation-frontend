@@ -26,24 +26,46 @@ const ContactPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+  
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Thank you for your message! We will get back to you soon.');
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: '',
-        inquiryType: 'general'
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: 'f1a19ad9-9569-420e-81a0-b84474abd66a', // 🔴 replace this
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: formData.subject,
+          inquiryType: formData.inquiryType,
+          message: formData.message
+        })
       });
+  
+      const result = await response.json();
+  
+      if (result.success) {
+        toast.success('Thank you! Your message has been sent successfully.');
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: '',
+          inquiryType: 'general'
+        });
+      } else {
+        toast.error('Something went wrong. Please try again.');
+      }
     } catch (error) {
       toast.error('Failed to send message. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+  
 
   const contactInfo = [
     {
@@ -63,9 +85,9 @@ const ContactPage = () => {
     {
       icon: Mail,
       title: 'Email Address',
-      details: ['info@wavesglobal.ae'],
+      details: ['info@wavescation.com'],
       color: 'text-gray-700',
-      href: 'mailto:info@wavesglobal.ae'
+      href: 'mailto:info@wavescation.com'
     },
     {
       icon: Clock,
